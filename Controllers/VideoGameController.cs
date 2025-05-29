@@ -7,7 +7,7 @@ namespace VideoGameApi.Controllers
     [ApiController]
     public class VideoGameController : ControllerBase
     {
-        static private List<VideoGame> videoGames = new List<VideoGame> 
+        static private List<VideoGame> videoGames = new List<VideoGame>
         {
             new VideoGame
             {
@@ -15,7 +15,7 @@ namespace VideoGameApi.Controllers
                 Title = "Spider-Man 2",
                 Platform = "PS5",
                 Developer = " Insomniac Games",
-                Publisher = "Sony"  
+                Publisher = "Sony"
             },
             new VideoGame
             {
@@ -38,6 +38,26 @@ namespace VideoGameApi.Controllers
         public ActionResult<List<VideoGame>> GetVideoGames()
         {
             return Ok(videoGames);
+        }
+        [HttpGet("{id}")]
+        public ActionResult<List<VideoGame>> GetVideoGameById(int id)
+        {
+            var game = videoGames.FirstOrDefault(g => g.Id == id);
+            if (game == null)
+                return NotFound();
+
+            return Ok(game);
+        }
+        [HttpPost]
+        public ActionResult<VideoGame> AddVideoGame(VideoGame newGame)
+        {
+            if (newGame == null)
+                return BadRequest();
+
+            newGame.Id = videoGames.Max(g => g.Id) + 1;
+            videoGames.Add(newGame);
+            return CreatedAtAction(nameof(GetVideoGameById), new { id= newGame.Id }, newGame); 
+
         }
     }
 }
